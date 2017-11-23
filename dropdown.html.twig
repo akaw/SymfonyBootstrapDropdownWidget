@@ -1,0 +1,94 @@
+{#
+    BOOTSTRRAP 3 Dropdown with ajax
+    
+    id string
+    label string
+    button boolean Button or Link?
+    navbar boolean Dropdown in navbar?
+    active string item.id from active element
+    items array:
+        item.id
+        item.header boolean
+        item.label text
+        item.href text 
+        item.ajax boolean
+            true:
+                item.action //
+                item.target //DOM element or console
+                
+    {% include 'AppBundle:widget:dropdown.html.twig' with {
+           'items': itemsArray
+          ,'id':'dropdown'
+          ,'label':'Dropdown'
+          ,'button':0
+          ,'navbar':1
+    } %}
+#}
+{% if button is not defined %}
+    {% set button = true %}
+{% endif %}
+{% if navbar is not defined %}
+    {% set navbar = false %}
+{% endif %}
+
+{% if navbar %}
+    <li class="dropdown">
+{% else %}
+    <div class="btn-group">   
+{% endif %}
+    {% if button %}             
+        <button type="button" class="btn btn-default {% if navbar %}navbar-btn{% endif %}
+    {% else %}
+        <a class="
+    {% endif %}
+        dropdown-toggle" role="button" id="{{ id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {% if active is defined %}
+            {% for item in items %}
+                {% if item.id is defined and active == item.id %}
+                    {{item.label | trans}}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {{ label | trans}}
+        {% endif %}
+        <span class="caret"></span>
+    {% if button %}
+        </button>
+    {% else %}
+        </a>
+    {% endif %}
+    <ul class="dropdown-menu" aria-labelledby="{{ id }}">
+        {% for item in items %}
+            {% if item.header %}
+                    {% if not loop.first %}
+                        <li role="separator" class="divider"></li>
+                    {% endif %}
+                    {% if item.label is defined %}
+                        <li class="dropdown-header">{{item.label}}</li>
+                    {% endif %}
+            {% else %}
+                    <li {% if item.disabled is defined and item.disabled %}class="disabled"{% endif %}>
+                        <a
+                            {% if item.href is defined %}
+                                href="{{ item.href }}"
+                            {% endif %}
+                            class="dropdown-item
+                            {% if item.ajax is defined and item.ajax %} ajaxAction{% endif %}
+                            {% if item.disabled is defined and item.disabled %} disabled{% endif %}
+                            {% if active is defined and active == item.id %} active{% endif %}"
+                            {% if item.ajax is defined and item.ajax %}
+                                data-id="{{ item.id }}"
+                                data-action="{{ item.action }}"
+                                data-target="{{ item.target }}"
+                            {% endif %}>
+                            {{item.label}}
+                        </a>
+                    </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% if navbar %}
+    </li>
+{% else %}
+    </div>   
+{% endif %}
